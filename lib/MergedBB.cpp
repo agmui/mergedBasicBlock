@@ -10,17 +10,23 @@ namespace merged {
 
     }
 
-    int MergedBB::contains(const llvm::Function *F) const {
-        llvm::GlobalNumberState gn;
+    int MergedBB::contains(const llvm::Function *F, bool verbose) {
+        llvm::GlobalNumberState gn; //TODO: might need to be a field?
         MergedBBComparator mergedBbComparator(headFunc, F, &gn); //TODO: maybe make field
-        return mergedBbComparator.compare();
+        auto res = mergedBbComparator.compare(BBMap, verbose);
+        llvm::outs() << (res ? llvm::raw_ostream::RED : llvm::raw_ostream::GREEN) << "Merged BB Cmp"
+                     << llvm::raw_ostream::RESET << '\n';
+        return res;
     }
 
-    int MergedBB::merge(const llvm::Function *F) {
-        return 0;
+    void MergedBB::merge(const llvm::Function *F, bool verbose) {
+        llvm::GlobalNumberState gn; //TODO: might need to be a field?
+        MergedBBComparator mergedBbComparator(headFunc, F, &gn); //TODO: maybe make field
+        mergedBbComparator.merge(BBMap, verbose);
     }
 
     void MergedBB::saveToFile(const std::string &filename) const {
 
     }
+
 } // merged

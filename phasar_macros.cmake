@@ -191,7 +191,7 @@ function(generate_ll_file)
     set(GEN_CMD_COMMENT "${GEN_CMD_COMMENT}[O2]")
   endif()
 
-  if(GEN_LL_03)
+  if(GEN_LL_O3)
     list(APPEND GEN_CXX_FLAGS -O3)
     list(APPEND GEN_C_FLAGS -O3)
     set(GEN_CMD_COMMENT "${GEN_CMD_COMMENT}[O3]")

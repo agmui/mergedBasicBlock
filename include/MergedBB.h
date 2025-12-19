@@ -14,18 +14,19 @@ namespace merged {
 
     class MergedBB {
     public:
-        MergedBB(const llvm::Function *F) : headFunc(F) {}
+        //TODO: check if we need to merge to setup the BBMap with the headFunc
+        MergedBB(const llvm::Function *F) : headFunc(F) { merge(F); }
 
         MergedBB(const std::string &inputFile);
 
-        int contains(const llvm::Function *F) const;
+        int contains(const llvm::Function *F, bool verbose = false);
 
-        int merge(const llvm::Function *F);
+        void merge(const llvm::Function *F, bool verbose = false);
 
         void saveToFile(const std::string &filename) const;
 
     private:
-        llvm::DenseMap<const llvm::BasicBlock *, const llvm::BasicBlock *> BBMap;
+        llvm::DenseMap<const llvm::BasicBlock *, std::pair<const llvm::BasicBlock *, llvm::DenseMap<const llvm::Value *, int>>> BBMap;
         const llvm::Function *headFunc;
     };
 

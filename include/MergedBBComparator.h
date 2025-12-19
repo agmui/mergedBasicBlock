@@ -7,18 +7,51 @@
 
 #include "llvm/IR/Function.h"
 #include "llvm/IR/BasicBlock.h"
-#include "llvm/Transforms/Utils/FunctionComparator.h"
+#include "llvm/ADT/SmallPtrSet.h"
+#include "FunctionComparator_cp.h"
 
 namespace merged {
 
-class MergedBBComparator : public llvm::FunctionComparator {
+    class MergedBBComparator : public llvm::FunctionComparator_cp {
     public:
-        using FunctionComparator::FunctionComparator;
+        MergedBBComparator(const llvm::Function *F1, const llvm::Function *F2,
+                           llvm::GlobalNumberState *GN)
+                : llvm::FunctionComparator_cp(F1, F2, GN) {}
 
-        int compare();
+        int
+        compare(llvm::DenseMap<const llvm::BasicBlock *, std::pair<const llvm::BasicBlock *, llvm::DenseMap<const llvm::Value *, int>>> &BBMap,
+                bool verbose = false);
 
-//    protected:
-//        int cmpValues(const Value *L, const Value *R) const;
+        void
+        merge(llvm::DenseMap<const llvm::BasicBlock *, std::pair<const llvm::BasicBlock *, llvm::DenseMap<const llvm::Value *, int>>> &BBMap,
+              bool verbose = false);
+
+
+    protected:
+        int cmpBasicBlocks(const llvm::BasicBlock *BBL, const llvm::BasicBlock *BBR) const;
+
+
+    private:
+        enum MatchType {
+            allMatch,
+            notMatch,
+            blockSwitch
+        };
+        struct MatchResult {
+            MatchType matchType;
+            union {
+                const llvm::BasicBlock *newBB;
+                int equiv = 0;
+            } value;
+        };
+
+        bool mergeBBPath = false;
+        bool verbose = false;
+
+        MatchResult recurse(const llvm::BasicBlock *BBL, const llvm::BasicBlock *BBR,
+                llvm::SmallPtrSet<const llvm::BasicBlock *, 32> &VisitedBBs,
+                llvm::DenseMap<const llvm::BasicBlock *, std::pair<const llvm::BasicBlock *, llvm::DenseMap<const llvm::Value *, int>>> &BBMap,
+                const llvm::BasicBlock *BBRParent = nullptr);
     };
 
 } // merged

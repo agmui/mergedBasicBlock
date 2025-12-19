@@ -1,5 +1,5 @@
 
-add_library(MergedBB MergedBBComparator.cpp MergedBB.cpp)
+add_library(MergedBB MergedBBComparator.cpp MergedBB.cpp FunctionComparator_cp.cpp)
 
 llvm_map_components_to_libnames(llvm_libs support core irreader transformutils)
 target_link_libraries(MergedBB PRIVATE ${llvm_libs})#LLVMCore LLVMIRReader LLVMTransformUtils)
